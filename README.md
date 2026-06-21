@@ -28,18 +28,37 @@ Install dependencies:
 
 ```bash
 npm install
+```
+
 Run the development server:
+
+```bash
 npm run dev
+```
+
 Build for production:
+
+```bash
 npm run build
+```
+
 Run tests:
+
+```bash
 npm test
+```
 
--- Preview the production build:
+## Preview Project Build
 
+Preview the production build locally:
+
+```bash
 npm run preview
+```
 
---Project Structure
+## Project Structure
+
+```text
 src/
   components/
     ActionTracker.jsx
@@ -54,7 +73,8 @@ src/
   App.jsx
   main.jsx
   index.css
-
---License
-This project is for educational and hackathon/demo use.
 ```
+
+## License
+
+This project is for educational and hackathon/demo use.
