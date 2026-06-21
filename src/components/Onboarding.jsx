@@ -70,7 +70,7 @@ export default function Onboarding({ onComplete }) {
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '2rem', maxWidth: '500px', marginInline: 'auto' }}>
               Welcome to EcoPulse. Answer a few short questions about your lifestyle to establish your carbon benchmark, unlock rewards, and start your smart sustainability roadmap.
             </p>
-            <button className="btn btn-primary" onClick={handleNext} style={{ width: '100%', padding: '1rem' }}>
+            <button className="btn btn-primary" type="button" onClick={handleNext} style={{ width: '100%', padding: '1rem' }}>
               Begin Assessment <ArrowRight size={18} />
             </button>
           </div>
@@ -87,10 +87,12 @@ export default function Onboarding({ onComplete }) {
             </p>
 
             <div className="form-group">
-              <label className="form-label">Monthly Electricity Consumption (kWh)</label>
+              <label className="form-label" htmlFor="electricityMonthlyKwh">Monthly Electricity Consumption (kWh)</label>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <input 
                   type="range" 
+                  id="electricityMonthlyKwh"
+                  aria-describedby="electricityMonthlyKwh-value"
                   min="0" 
                   max="1000" 
                   step="10"
@@ -98,15 +100,17 @@ export default function Onboarding({ onComplete }) {
                   value={profile.electricityMonthlyKwh}
                   onChange={(e) => updateProfile('electricityMonthlyKwh', e.target.value)}
                 />
-                <span style={{ fontSize: '1.1rem', fontWeight: 600, width: '80px', textAlign: 'right' }}>{profile.electricityMonthlyKwh} kWh</span>
+                <span id="electricityMonthlyKwh-value" style={{ fontSize: '1.1rem', fontWeight: 600, width: '80px', textAlign: 'right' }}>{profile.electricityMonthlyKwh} kWh</span>
               </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Monthly LPG Cylinders (14.2kg standard)</label>
+              <label className="form-label" htmlFor="lpgMonthlyCylinders">Monthly LPG Cylinders (14.2kg standard)</label>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <input 
                   type="range" 
+                  id="lpgMonthlyCylinders"
+                  aria-describedby="lpgMonthlyCylinders-value"
                   min="0" 
                   max="5" 
                   step="0.5"
@@ -114,7 +118,7 @@ export default function Onboarding({ onComplete }) {
                   value={profile.lpgMonthlyCylinders}
                   onChange={(e) => updateProfile('lpgMonthlyCylinders', e.target.value)}
                 />
-                <span style={{ fontSize: '1.1rem', fontWeight: 600, width: '80px', textAlign: 'right' }}>{profile.lpgMonthlyCylinders} cyls</span>
+                <span id="lpgMonthlyCylinders-value" style={{ fontSize: '1.1rem', fontWeight: 600, width: '80px', textAlign: 'right' }}>{profile.lpgMonthlyCylinders} cyls</span>
               </div>
             </div>
 
@@ -128,6 +132,7 @@ export default function Onboarding({ onComplete }) {
                 </div>
                 <input 
                   type="checkbox" 
+                  aria-label="I generate clean rooftop solar energy"
                   style={{ width: '20px', height: '20px', accentColor: 'var(--accent-green)' }} 
                   checked={profile.hasSolar}
                   onChange={(e) => updateProfile('hasSolar', e.target.checked)}
@@ -136,10 +141,11 @@ export default function Onboarding({ onComplete }) {
 
               {profile.hasSolar && (
                 <div className="form-group" style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
-                  <label className="form-label">Solar Power Produced Monthly (kWh)</label>
+                  <label className="form-label" htmlFor="solarMonthlyKwh">Solar Power Produced Monthly (kWh)</label>
                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <input 
                       type="range" 
+                      id="solarMonthlyKwh"
                       min="0" 
                       max="800" 
                       step="10"
@@ -167,8 +173,9 @@ export default function Onboarding({ onComplete }) {
 
             <div className="form-grid-2">
               <div className="form-group">
-                <label className="form-label">Car Fuel Type</label>
+                <label className="form-label" htmlFor="carType">Car Fuel Type</label>
                 <select 
+                  id="carType"
                   className="form-input" 
                   value={profile.carType}
                   onChange={(e) => updateProfile('carType', e.target.value)}
@@ -181,9 +188,11 @@ export default function Onboarding({ onComplete }) {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Car Weekly Distance (km)</label>
+                <label className="form-label" htmlFor="carWeeklyKm">Car Weekly Distance (km)</label>
                 <input 
                   type="number" 
+                  id="carWeeklyKm"
+                  min="0"
                   className="form-input" 
                   value={profile.carWeeklyKm} 
                   onChange={(e) => updateProfile('carWeeklyKm', e.target.value)}
@@ -193,8 +202,9 @@ export default function Onboarding({ onComplete }) {
 
             <div className="form-grid-2">
               <div className="form-group">
-                <label className="form-label">Bike / Scooter Fuel Type</label>
+                <label className="form-label" htmlFor="bikeType">Bike / Scooter Fuel Type</label>
                 <select 
+                  id="bikeType"
                   className="form-input" 
                   value={profile.bikeType}
                   onChange={(e) => updateProfile('bikeType', e.target.value)}
@@ -205,9 +215,11 @@ export default function Onboarding({ onComplete }) {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Bike Weekly Distance (km)</label>
+                <label className="form-label" htmlFor="bikeWeeklyKm">Bike Weekly Distance (km)</label>
                 <input 
                   type="number" 
+                  id="bikeWeeklyKm"
+                  min="0"
                   className="form-input" 
                   value={profile.bikeWeeklyKm} 
                   onChange={(e) => updateProfile('bikeWeeklyKm', e.target.value)}
@@ -221,27 +233,33 @@ export default function Onboarding({ onComplete }) {
               </h4>
               <div className="form-grid-3">
                 <div className="form-group">
-                  <label className="form-label">Bus</label>
+                  <label className="form-label" htmlFor="busWeeklyKm">Bus</label>
                   <input 
                     type="number" 
+                    id="busWeeklyKm"
+                    min="0"
                     className="form-input" 
                     value={profile.busWeeklyKm} 
                     onChange={(e) => updateProfile('busWeeklyKm', e.target.value)}
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Metro / Train</label>
+                  <label className="form-label" htmlFor="metroWeeklyKm">Metro / Train</label>
                   <input 
                     type="number" 
+                    id="metroWeeklyKm"
+                    min="0"
                     className="form-input" 
                     value={profile.metroWeeklyKm} 
                     onChange={(e) => updateProfile('metroWeeklyKm', e.target.value)}
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Long-distance Train</label>
+                  <label className="form-label" htmlFor="trainWeeklyKm">Long-distance Train</label>
                   <input 
                     type="number" 
+                    id="trainWeeklyKm"
+                    min="0"
                     className="form-input" 
                     value={profile.trainWeeklyKm} 
                     onChange={(e) => updateProfile('trainWeeklyKm', e.target.value)}
@@ -263,10 +281,11 @@ export default function Onboarding({ onComplete }) {
             </p>
 
             <div className="form-group">
-              <label className="form-label">Yearly Domestic Flights (round-trips)</label>
+              <label className="form-label" htmlFor="domesticFlightsYearly">Yearly Domestic Flights (round-trips)</label>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <input 
                   type="range" 
+                  id="domesticFlightsYearly"
                   min="0" 
                   max="15" 
                   step="1"
@@ -279,10 +298,11 @@ export default function Onboarding({ onComplete }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Yearly International Flights (round-trips)</label>
+              <label className="form-label" htmlFor="intlFlightsYearly">Yearly International Flights (round-trips)</label>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <input 
                   type="range" 
+                  id="intlFlightsYearly"
                   min="0" 
                   max="10" 
                   step="1"
@@ -314,8 +334,10 @@ export default function Onboarding({ onComplete }) {
                 { type: 'vegetarian', label: 'Vegetarian', desc: 'No meat or fish, regular dairy/egg consumption.' },
                 { type: 'vegan', label: 'Vegan', desc: '100% plant-based food. No animal products.' }
               ].map(dietOpt => (
-                <div 
+                <button 
                   key={dietOpt.type}
+                  type="button"
+                  aria-pressed={profile.dietType === dietOpt.type}
                   className="glass-panel"
                   style={{ 
                     cursor: 'pointer',
@@ -335,7 +357,7 @@ export default function Onboarding({ onComplete }) {
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{dietOpt.desc}</p>
                   </div>
                   {profile.dietType === dietOpt.type && <CheckCircle size={18} style={{ color: 'var(--accent-mint)' }} />}
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -357,8 +379,10 @@ export default function Onboarding({ onComplete }) {
                 { level: 'moderate', label: 'Average Consumer', desc: 'Buy gadgets only when needed, average clothes spending, mindful of waste.' },
                 { level: 'low', label: 'Minimalist / Eco-Conscious', desc: 'Thrift clothing, repair devices, active recycler, minimal new purchasing.' }
               ].map(consOpt => (
-                <div 
+                <button 
                   key={consOpt.level}
+                  type="button"
+                  aria-pressed={profile.consumptionLevel === consOpt.level}
                   className="glass-panel"
                   style={{ 
                     cursor: 'pointer',
@@ -378,7 +402,7 @@ export default function Onboarding({ onComplete }) {
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{consOpt.desc}</p>
                   </div>
                   {profile.consumptionLevel === consOpt.level && <CheckCircle size={18} style={{ color: 'var(--accent-indigo)' }} />}
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -415,10 +439,10 @@ export default function Onboarding({ onComplete }) {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <button className="btn btn-secondary" onClick={handleBack} disabled={currentStep === 0}>
+            <button className="btn btn-secondary" type="button" onClick={handleBack} disabled={currentStep === 0}>
               <ArrowLeft size={16} /> Back
             </button>
-            <button className="btn btn-primary" onClick={handleNext}>
+            <button className="btn btn-primary" type="button" onClick={handleNext}>
               {currentStep === STEPS.length - 1 ? 'Finish Profile' : 'Next Step'} <ArrowRight size={16} />
             </button>
           </div>

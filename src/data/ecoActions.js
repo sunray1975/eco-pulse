@@ -311,7 +311,8 @@ export function queryEcoActions(queryText) {
     // fallback search for short words
     return ECO_ACTIONS.filter(action => 
       action.title.toLowerCase().includes(normalizedQuery) ||
-      action.category.toLowerCase().includes(normalizedQuery)
+      action.category.toLowerCase().includes(normalizedQuery) ||
+      action.keywords.some(keyword => keyword.toLowerCase().includes(normalizedQuery))
     );
   }
 

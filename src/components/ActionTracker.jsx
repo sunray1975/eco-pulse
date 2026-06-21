@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, Award, Flame, CheckCircle, Plus, Calendar, TrendingDown, Trash2 } from 'lucide-react';
+import { Award, Flame, Plus } from 'lucide-react';
 
 const LEVEL_NAMES = [
   'Eco Seed',      // Level 1: 0-99 XP
@@ -9,7 +9,7 @@ const LEVEL_NAMES = [
   'Climate Hero'    // Level 5: 1000+ XP
 ];
 
-export default function ActionTracker({ ecoActions, loggedActions, onToggleAction, onAddLog, onDeleteLog, userPoints, setPoints }) {
+export default function ActionTracker({ ecoActions, loggedActions, onToggleAction, userPoints }) {
   const [activeTab, setActiveTab] = useState('all');
 
   // Level & XP calculations
@@ -171,7 +171,7 @@ export default function ActionTracker({ ecoActions, loggedActions, onToggleActio
               <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Commit to actions and shrink your active carbon footprint.</p>
             </div>
             
-            <div className="tabs-container">
+            <div className="tabs-container" role="tablist" aria-label="Filter eco actions by category">
               {[
                 { id: 'all', label: 'All' },
                 { id: 'home', label: 'Home' },
@@ -181,6 +181,9 @@ export default function ActionTracker({ ecoActions, loggedActions, onToggleActio
               ].map(tab => (
                 <button 
                   key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
                   className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
                   onClick={() => setActiveTab(tab.id)}
                 >
@@ -231,7 +234,10 @@ export default function ActionTracker({ ecoActions, loggedActions, onToggleActio
 
                   <div>
                     <button 
+                      type="button"
                       className={`btn ${isCommitted ? 'btn-danger' : 'btn-primary'}`}
+                      aria-pressed={isCommitted}
+                      aria-label={`${isCommitted ? 'Opt out of' : 'Commit to'} ${action.title}`}
                       style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', width: '110px' }}
                       onClick={() => onToggleAction(action)}
                     >

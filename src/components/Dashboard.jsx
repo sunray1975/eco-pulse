@@ -163,7 +163,7 @@ export default function Dashboard({ baselineFootprint, activeFootprint, loggedAc
           <h4 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', alignSelf: 'flex-start' }}>Carbon Emission Profile</h4>
           
           <div style={{ position: 'relative', width: '200px', height: '200px', marginBottom: '1rem' }}>
-            <svg width="200" height="200" viewBox="0 0 200 200" style={{ transform: 'rotate(-90deg)' }}>
+            <svg role="img" aria-label={`Carbon gauge showing ${(totalCo2 / 1000).toFixed(1)} tons CO2e`} width="200" height="200" viewBox="0 0 200 200" style={{ transform: 'rotate(-90deg)' }}>
               {/* Background Track */}
               <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="12" />
               {/* Dynamic Progress Indicator */}
@@ -216,7 +216,7 @@ export default function Dashboard({ baselineFootprint, activeFootprint, loggedAc
           {/* Donut Chart & Category Percentages */}
           <div className="glass-panel" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', width: '160px', height: '160px' }}>
-              <svg width="160" height="160" viewBox="0 0 200 200">
+              <svg role="img" aria-label="Carbon source distribution donut chart" width="160" height="160" viewBox="0 0 200 200">
                 {segments.map((seg, idx) => (
                   <path 
                     key={idx}
@@ -274,7 +274,7 @@ export default function Dashboard({ baselineFootprint, activeFootprint, loggedAc
             </div>
 
             <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
-              <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} preserveAspectRatio="none">
+              <svg role="img" aria-label="Historical footprint trajectory line chart" width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} preserveAspectRatio="none">
                 {/* Horizontal grid lines */}
                 {[0.25, 0.5, 0.75, 1].map((f, i) => (
                   <line 

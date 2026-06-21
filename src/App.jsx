@@ -6,74 +6,67 @@ import Simulator from './components/Simulator';
 import EcoAdvisor from './components/EcoAdvisor';
 import { calculateFootprint } from './data/carbonModel';
 import { ECO_ACTIONS } from './data/ecoActions';
+import { computeActiveFootprint } from './data/footprintUtils';
 import { Leaf, LayoutDashboard, Calendar, Compass, MessageSquare, RotateCcw, Award } from 'lucide-react';
+
+const STORAGE_KEYS = [
+  'ecopulse_onboarded',
+  'ecopulse_profile',
+  'ecopulse_logged_actions',
+  'ecopulse_points'
+];
+
+export const emptyFootprint = { home: 0, travel: 0, diet: 0, consumption: 0, total: 0 };
+
+function safeJsonParse(value, fallback) {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function readStoredProfile() {
+  const savedOnboarded = localStorage.getItem('ecopulse_onboarded');
+  const savedProfile = safeJsonParse(localStorage.getItem('ecopulse_profile'), null);
+  const savedActions = safeJsonParse(localStorage.getItem('ecopulse_logged_actions'), []);
+  const savedPoints = Number.parseInt(localStorage.getItem('ecopulse_points') || '0', 10);
+
+  if (savedOnboarded !== 'true' || !savedProfile) return null;
+
+  return {
+    profile: savedProfile,
+    actions: Array.isArray(savedActions) ? savedActions : [],
+    points: Number.isFinite(savedPoints) && savedPoints > 0 ? savedPoints : 0
+  };
+}
 
 export default function App() {
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [profile, setProfile] = useState(null);
-  const [baselineFootprint, setBaselineFootprint] = useState({ home: 0, travel: 0, diet: 0, consumption: 0, total: 0 });
-  const [activeFootprint, setActiveFootprint] = useState({ home: 0, travel: 0, diet: 0, consumption: 0, total: 0 });
+  const [baselineFootprint, setBaselineFootprint] = useState(emptyFootprint);
+  const [activeFootprint, setActiveFootprint] = useState(emptyFootprint);
   const [loggedActions, setLoggedActions] = useState([]);
   const [userPoints, setPoints] = useState(0);
   const [currentView, setCurrentView] = useState('dashboard');
 
   // Load state from localStorage on mount
   useEffect(() => {
-    const savedOnboarded = localStorage.getItem('ecopulse_onboarded');
-    const savedProfile = localStorage.getItem('ecopulse_profile');
-    const savedActions = localStorage.getItem('ecopulse_logged_actions');
-    const savedPoints = localStorage.getItem('ecopulse_points');
+    const storedProfile = readStoredProfile();
 
-    if (savedOnboarded === 'true' && savedProfile) {
-      const parsedProfile = JSON.parse(savedProfile);
-      const parsedActions = savedActions ? JSON.parse(savedActions) : [];
-      const parsedPoints = savedPoints ? parseInt(savedPoints) : 0;
-
-      setProfile(parsedProfile);
-      setLoggedActions(parsedActions);
-      setPoints(parsedPoints);
+    if (storedProfile) {
+      setProfile(storedProfile.profile);
+      setLoggedActions(storedProfile.actions);
+      setPoints(storedProfile.points);
       setIsOnboarded(true);
 
-      // Compute baseline
-      const base = calculateFootprint(parsedProfile);
+      const base = calculateFootprint(storedProfile.profile);
       setBaselineFootprint(base);
-
-      // Compute active footprint subtracting savings from committed actions
-      const active = computeActiveFootprint(base, parsedActions);
+      const active = computeActiveFootprint(base, storedProfile.actions);
       setActiveFootprint(active);
     }
   }, []);
-
-  // Compute active footprint based on committed actions
-  const computeActiveFootprint = (base, actionsList) => {
-    let homeRed = 0;
-    let travelRed = 0;
-    let dietRed = 0;
-    let consumptionRed = 0;
-
-    actionsList.forEach(actionId => {
-      const action = ECO_ACTIONS.find(a => a.id === actionId);
-      if (action) {
-        if (action.category === 'home') homeRed += action.carbonSavings;
-        if (action.category === 'travel') travelRed += action.carbonSavings;
-        if (action.category === 'diet') dietRed += action.carbonSavings;
-        if (action.category === 'consumption') consumptionRed += action.carbonSavings;
-      }
-    });
-
-    const home = Math.max(0, base.home - homeRed);
-    const travel = Math.max(0, base.travel - travelRed);
-    const diet = Math.max(0, base.diet - dietRed);
-    const consumption = Math.max(0, base.consumption - consumptionRed);
-
-    return {
-      home,
-      travel,
-      diet,
-      consumption,
-      total: home + travel + diet + consumption
-    };
-  };
 
   // Complete onboarding
   const handleCompleteOnboarding = (newProfile) => {
@@ -121,13 +114,13 @@ export default function App() {
   // Reset Profile
   const handleResetProfile = () => {
     if (window.confirm("Are you sure you want to reset your EcoPulse profile? This will clear all onboarding metrics and points.")) {
-      localStorage.clear();
+      STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
       setIsOnboarded(false);
       setProfile(null);
       setLoggedActions([]);
       setPoints(0);
-      setBaselineFootprint({ home: 0, travel: 0, diet: 0, consumption: 0, total: 0 });
-      setActiveFootprint({ home: 0, travel: 0, diet: 0, consumption: 0, total: 0 });
+      setBaselineFootprint(emptyFootprint);
+      setActiveFootprint(emptyFootprint);
       setCurrentView('dashboard');
     }
   };
@@ -150,6 +143,7 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       
       {/* Header HUD */}
       <header className="glass-panel" style={{ 
@@ -191,15 +185,15 @@ export default function App() {
 
         {/* Controls */}
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button className="btn btn-secondary" onClick={handleResetProfile} style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <button className="btn btn-secondary" type="button" onClick={handleResetProfile} aria-label="Reset EcoPulse profile" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <RotateCcw size={14} /> Reset Profile
           </button>
         </div>
       </header>
 
       {/* Main Tabs Navigation */}
-      <nav style={{ paddingInline: '1.5rem', marginBottom: '1.5rem' }}>
-        <div className="tabs-container" style={{ width: '100%', justifyContent: 'space-around', padding: '0.4rem' }}>
+      <nav aria-label="Primary views" style={{ paddingInline: '1.5rem', marginBottom: '1.5rem' }}>
+        <div className="tabs-container" role="tablist" aria-label="EcoPulse sections" style={{ width: '100%', justifyContent: 'space-around', padding: '0.4rem' }}>
           {[
             { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
             { id: 'tracker', label: 'Quest Ledger', icon: <Compass size={18} /> },
@@ -208,6 +202,10 @@ export default function App() {
           ].map(view => (
             <button
               key={view.id}
+              type="button"
+              role="tab"
+              aria-selected={currentView === view.id}
+              aria-controls={`${view.id}-panel`}
               className={`tab-btn ${currentView === view.id ? 'active' : ''}`}
               onClick={() => setCurrentView(view.id)}
               style={{ flex: 1, justifyContent: 'center', padding: '0.75rem' }}
@@ -219,8 +217,8 @@ export default function App() {
       </nav>
 
       {/* View Rendering */}
-      <main style={{ flex: 1, paddingInline: '1.5rem', paddingBottom: '2.5rem' }}>
-        <div className="fade-in">
+      <main id="main-content" style={{ flex: 1, paddingInline: '1.5rem', paddingBottom: '2.5rem' }}>
+        <div className="fade-in" id={`${currentView}-panel`} role="tabpanel" tabIndex="-1">
           {currentView === 'dashboard' && (
             <Dashboard 
               baselineFootprint={baselineFootprint}
@@ -236,7 +234,6 @@ export default function App() {
               loggedActions={loggedActions}
               onToggleAction={handleToggleAction}
               userPoints={userPoints}
-              setPoints={setPoints}
             />
           )}
 

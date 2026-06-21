@@ -91,6 +91,7 @@ export default function Simulator({ activeFootprint, profile }) {
           </div>
           <input 
             type="range"
+            aria-label="Solar energy transition percentage"
             min="0"
             max="100"
             step="5"
@@ -113,6 +114,7 @@ export default function Simulator({ activeFootprint, profile }) {
           </div>
           <input 
             type="range"
+            aria-label="Electric vehicle commute percentage"
             min="0"
             max="100"
             step="5"
@@ -140,6 +142,7 @@ export default function Simulator({ activeFootprint, profile }) {
           </div>
           <input 
             type="range"
+            aria-label="Food transition level"
             min="0"
             max="4"
             step="1"
@@ -162,6 +165,7 @@ export default function Simulator({ activeFootprint, profile }) {
           </div>
           <input 
             type="range"
+            aria-label="Circular economy and waste reduction percentage"
             min="0"
             max="100"
             step="5"

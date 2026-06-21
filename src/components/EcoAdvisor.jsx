@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { queryEcoActions } from '../data/ecoActions';
-import { Send, Sparkles, User, AlertCircle, Plus, Check } from 'lucide-react';
+import { Send, Sparkles, User, Plus, Check } from 'lucide-react';
 
 const SUGGESTIONS = [
   { text: 'How do I save electricity?', query: 'electricity energy led power' },
@@ -73,7 +73,7 @@ export default function EcoAdvisor({ ecoActions, loggedActions, onToggleAction }
   };
 
   return (
-    <div className="glass-panel" style={{ height: '620px', display: 'flex', flexDirection: 'column', padding: '1.25rem' }}>
+    <section className="glass-panel" aria-labelledby="advisor-title" style={{ height: '620px', display: 'flex', flexDirection: 'column', padding: '1.25rem' }}>
       
       {/* Advisor Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.8rem', marginBottom: '1rem' }}>
@@ -81,7 +81,7 @@ export default function EcoAdvisor({ ecoActions, loggedActions, onToggleAction }
           <Sparkles size={20} className="pulse-glow" style={{ borderRadius: '50%' }} />
         </div>
         <div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>EcoPulse Smart Advisor</h3>
+          <h3 id="advisor-title" style={{ fontSize: '1.15rem', fontWeight: 700 }}>EcoPulse Smart Advisor</h3>
           <span style={{ fontSize: '0.75rem', color: 'var(--accent-mint)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
             ● Active Semantic Advice Engine
           </span>
@@ -89,7 +89,7 @@ export default function EcoAdvisor({ ecoActions, loggedActions, onToggleAction }
       </div>
 
       {/* Chat Messages Log */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div role="log" aria-live="polite" aria-label="Advisor conversation" style={{ flex: 1, overflowY: 'auto', paddingRight: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {messages.map((msg, idx) => (
           <div 
             key={idx} 
@@ -158,7 +158,10 @@ export default function EcoAdvisor({ ecoActions, loggedActions, onToggleAction }
                         </div>
                         
                         <button 
+                          type="button"
                           onClick={() => onToggleAction(action)}
+                          aria-label={`${isCommitted ? 'Remove' : 'Add'} ${action.title} from committed actions`}
+                          aria-pressed={isCommitted}
                           style={{
                             padding: '0.4rem',
                             borderRadius: '8px',
@@ -185,7 +188,7 @@ export default function EcoAdvisor({ ecoActions, loggedActions, onToggleAction }
 
         {isTyping && (
           <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyCenter: 'center', fontSize: '0.8rem', paddingLeft: '8px' }}>🌱</div>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>🌱</div>
             <div style={{ padding: '0.6rem 1rem', borderRadius: '4px 18px 18px 18px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', display: 'flex', gap: '0.3rem' }}>
               <span className="dot" style={{ width: '6px', height: '6px', background: 'var(--text-muted)', borderRadius: '50%', animation: 'float 1s infinite' }}></span>
               <span className="dot" style={{ width: '6px', height: '6px', background: 'var(--text-muted)', borderRadius: '50%', animation: 'float 1.2s infinite' }}></span>
@@ -201,6 +204,7 @@ export default function EcoAdvisor({ ecoActions, loggedActions, onToggleAction }
         {SUGGESTIONS.map((s, i) => (
           <button 
             key={i} 
+            type="button"
             onClick={() => handleSend(s.query)}
             style={{ 
               background: 'rgba(255,255,255,0.02)', 
@@ -227,17 +231,18 @@ export default function EcoAdvisor({ ecoActions, loggedActions, onToggleAction }
       >
         <input 
           type="text" 
+          aria-label="Ask EcoPulse advisor a sustainability question"
           placeholder="Ask me: 'how to cut electric bills?' or 'tips on flying'..." 
           className="form-input" 
           style={{ flex: 1 }}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
-        <button type="submit" className="btn btn-indigo" style={{ padding: '0.8rem' }}>
+        <button type="submit" className="btn btn-indigo" aria-label="Send advisor question" style={{ padding: '0.8rem' }}>
           <Send size={18} />
         </button>
       </form>
 
-    </div>
+    </section>
   );
 }
