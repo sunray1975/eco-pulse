@@ -7,40 +7,11 @@ import EcoAdvisor from './components/EcoAdvisor';
 import { calculateFootprint } from './data/carbonModel';
 import { ECO_ACTIONS } from './data/ecoActions';
 import { computeActiveFootprint } from './data/footprintUtils';
+import { clearEcoPulseProfile, readStoredProfile, saveActionProgress, saveNewProfile } from './data/storage';
+import { getLevel } from './data/levels';
 import { Leaf, LayoutDashboard, Calendar, Compass, MessageSquare, RotateCcw, Award } from 'lucide-react';
 
-const STORAGE_KEYS = [
-  'ecopulse_onboarded',
-  'ecopulse_profile',
-  'ecopulse_logged_actions',
-  'ecopulse_points'
-];
-
 export const emptyFootprint = { home: 0, travel: 0, diet: 0, consumption: 0, total: 0 };
-
-function safeJsonParse(value, fallback) {
-  if (!value) return fallback;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return fallback;
-  }
-}
-
-function readStoredProfile() {
-  const savedOnboarded = localStorage.getItem('ecopulse_onboarded');
-  const savedProfile = safeJsonParse(localStorage.getItem('ecopulse_profile'), null);
-  const savedActions = safeJsonParse(localStorage.getItem('ecopulse_logged_actions'), []);
-  const savedPoints = Number.parseInt(localStorage.getItem('ecopulse_points') || '0', 10);
-
-  if (savedOnboarded !== 'true' || !savedProfile) return null;
-
-  return {
-    profile: savedProfile,
-    actions: Array.isArray(savedActions) ? savedActions : [],
-    points: Number.isFinite(savedPoints) && savedPoints > 0 ? savedPoints : 0
-  };
-}
 
 export default function App() {
   const [isOnboarded, setIsOnboarded] = useState(false);
@@ -79,10 +50,7 @@ export default function App() {
     setBaselineFootprint(base);
     setActiveFootprint(base);
 
-    localStorage.setItem('ecopulse_onboarded', 'true');
-    localStorage.setItem('ecopulse_profile', JSON.stringify(newProfile));
-    localStorage.setItem('ecopulse_logged_actions', JSON.stringify([]));
-    localStorage.setItem('ecopulse_points', '0');
+    saveNewProfile(newProfile);
   };
 
   // Toggle Commit/Opt-out action
@@ -107,14 +75,13 @@ export default function App() {
     const active = computeActiveFootprint(baselineFootprint, updatedActions);
     setActiveFootprint(active);
 
-    localStorage.setItem('ecopulse_logged_actions', JSON.stringify(updatedActions));
-    localStorage.setItem('ecopulse_points', updatedPoints.toString());
+    saveActionProgress(updatedActions, updatedPoints);
   };
 
   // Reset Profile
   const handleResetProfile = () => {
     if (window.confirm("Are you sure you want to reset your EcoPulse profile? This will clear all onboarding metrics and points.")) {
-      STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
+      clearEcoPulseProfile();
       setIsOnboarded(false);
       setProfile(null);
       setLoggedActions([]);
@@ -125,13 +92,7 @@ export default function App() {
     }
   };
 
-  const getLevelName = (pts) => {
-    if (pts >= 1000) return 'Lvl 5 Climate Hero';
-    if (pts >= 600) return 'Lvl 4 Green Guardian';
-    if (pts >= 300) return 'Lvl 3 Active Sapling';
-    if (pts >= 100) return 'Lvl 2 Green Sprout';
-    return 'Lvl 1 Eco Seed';
-  };
+  const level = getLevel(userPoints);
 
   if (!isOnboarded) {
     return (
@@ -175,7 +136,7 @@ export default function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', background: 'rgba(255,255,255,0.02)', padding: '0.5rem 1rem', borderRadius: '30px', border: '1px solid var(--border-color)' }}>
           <Award size={18} style={{ color: 'var(--accent-gold)' }} />
           <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            {getLevelName(userPoints)}
+            {level.label}
           </span>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>|</span>
           <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-mint)' }}>
@@ -223,8 +184,6 @@ export default function App() {
             <Dashboard 
               baselineFootprint={baselineFootprint}
               activeFootprint={activeFootprint}
-              loggedActions={loggedActions}
-              ecoActions={ECO_ACTIONS}
             />
           )}
 

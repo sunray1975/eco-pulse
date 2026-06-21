@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { calculateFootprint } from '../data/carbonModel';
-import { Zap, Flame, Car, Plane, Utensils, ShoppingBag, Sun, ArrowRight, ArrowLeft, CheckCircle, Leaf } from 'lucide-react';
+import { CONSUMPTION_OPTIONS, DIET_OPTIONS } from '../data/uiOptions';
+import { Zap, Car, Plane, Utensils, ShoppingBag, Sun, ArrowRight, ArrowLeft, CheckCircle, Leaf } from 'lucide-react';
 
 const STEPS = [
   { id: 'welcome', name: 'Start' },
@@ -327,13 +328,7 @@ export default function Onboarding({ onComplete }) {
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {[
-                { type: 'heavyMeat', label: 'Frequent Meat Eater', desc: 'Frequent red meat, chicken, and dairy intake daily.' },
-                { type: 'mediumMeat', label: 'Moderate Meat Eater', desc: 'Average amount of chicken/fish, occasional red meat.' },
-                { type: 'lowMeat', label: 'Flexitarian / Low Meat', desc: 'Primarily plant-based, rarely eating meat/fish.' },
-                { type: 'vegetarian', label: 'Vegetarian', desc: 'No meat or fish, regular dairy/egg consumption.' },
-                { type: 'vegan', label: 'Vegan', desc: '100% plant-based food. No animal products.' }
-              ].map(dietOpt => (
+              {DIET_OPTIONS.map(dietOpt => (
                 <button 
                   key={dietOpt.type}
                   type="button"
@@ -374,11 +369,7 @@ export default function Onboarding({ onComplete }) {
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {[
-                { level: 'high', label: 'Frequent Buyer / Tech Enthusiast', desc: 'Buy new gadgets often, follow fashion trends, rarely recycle.' },
-                { level: 'moderate', label: 'Average Consumer', desc: 'Buy gadgets only when needed, average clothes spending, mindful of waste.' },
-                { level: 'low', label: 'Minimalist / Eco-Conscious', desc: 'Thrift clothing, repair devices, active recycler, minimal new purchasing.' }
-              ].map(consOpt => (
+              {CONSUMPTION_OPTIONS.map(consOpt => (
                 <button 
                   key={consOpt.level}
                   type="button"

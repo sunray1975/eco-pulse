@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { getConversions, TARGETS } from '../data/carbonModel';
 import { Flame, Trees, Smartphone, Lightbulb, TrendingDown, Target, Info, Sparkles } from 'lucide-react';
 
-export default function Dashboard({ baselineFootprint, activeFootprint, loggedActions, ecoActions }) {
+export default function Dashboard({ baselineFootprint, activeFootprint }) {
   const [hoveredSegment, setHoveredSegment] = useState(null);
 
   // Compute values
@@ -12,8 +12,6 @@ export default function Dashboard({ baselineFootprint, activeFootprint, loggedAc
   const percentReduced = originalCo2 > 0 ? ((totalSaved / originalCo2) * 100).toFixed(0) : 0;
   
   const conversions = getConversions(totalCo2);
-  const savingsConversions = getConversions(totalSaved);
-
   // Categories data for donut chart
   const categories = [
     { name: 'Home Energy', value: activeFootprint.home, color: '#f59e0b', key: 'home' },

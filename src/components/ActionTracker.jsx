@@ -1,30 +1,12 @@
 import React, { useState } from 'react';
 import { Award, Flame, Plus } from 'lucide-react';
-
-const LEVEL_NAMES = [
-  'Eco Seed',      // Level 1: 0-99 XP
-  'Green Sprout',   // Level 2: 100-299 XP
-  'Active Sapling', // Level 3: 300-599 XP
-  'Green Guardian', // Level 4: 600-999 XP
-  'Climate Hero'    // Level 5: 1000+ XP
-];
+import { getLevel } from '../data/levels';
 
 export default function ActionTracker({ ecoActions, loggedActions, onToggleAction, userPoints }) {
   const [activeTab, setActiveTab] = useState('all');
 
-  // Level & XP calculations
-  const calculateLevel = (points) => {
-    if (points >= 1000) return { lvl: 5, xpMin: 1000, xpMax: 2000, name: LEVEL_NAMES[4] };
-    if (points >= 600) return { lvl: 4, xpMin: 600, xpMax: 1000, name: LEVEL_NAMES[3] };
-    if (points >= 300) return { lvl: 3, xpMin: 300, xpMax: 600, name: LEVEL_NAMES[2] };
-    if (points >= 100) return { lvl: 2, xpMin: 100, xpMax: 300, name: LEVEL_NAMES[1] };
-    return { lvl: 1, xpMin: 0, xpMax: 100, name: LEVEL_NAMES[0] };
-  };
-
-  const levelInfo = calculateLevel(userPoints);
-  const currentLvlXP = userPoints - levelInfo.xpMin;
+  const levelInfo = getLevel(userPoints);
   const neededLvlXP = levelInfo.xpMax - levelInfo.xpMin;
-  const xpPercent = Math.min(100, (currentLvlXP / neededLvlXP) * 100);
 
   // Badge list and unlock calculations
   const badges = [
@@ -75,7 +57,7 @@ export default function ActionTracker({ ecoActions, loggedActions, onToggleActio
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <div>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>User Level</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{levelInfo.name}</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{levelInfo.shortName}</h3>
             </div>
             <div style={{ 
               width: '45px', 
@@ -95,15 +77,15 @@ export default function ActionTracker({ ecoActions, loggedActions, onToggleActio
           </div>
 
           <div style={{ marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            <span>{currentLvlXP} / {neededLvlXP} XP</span>
-            <span>XP to Next Level: {levelInfo.xpMax - userPoints}</span>
+            <span>{levelInfo.currentLevelXp} / {neededLvlXP} XP</span>
+            <span>XP to Next Level: {levelInfo.xpToNext}</span>
           </div>
 
           <div className="progress-bar-container" style={{ marginBottom: '1rem', height: '8px' }}>
             <div 
               className="progress-bar-fill"
               style={{ 
-                width: `${xpPercent}%`, 
+                width: `${levelInfo.xpPercent}%`, 
                 background: 'linear-gradient(90deg, var(--accent-indigo), var(--accent-purple))'
               }}
             />

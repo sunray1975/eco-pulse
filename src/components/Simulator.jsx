@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Calendar, DollarSign, Leaf, Zap, Car, Utensils } from 'lucide-react';
+import { Sparkles, Calendar, Leaf, Zap, Car, Utensils } from 'lucide-react';
 import { EMISSION_FACTORS } from '../data/carbonModel';
 
 export default function Simulator({ activeFootprint, profile }) {
